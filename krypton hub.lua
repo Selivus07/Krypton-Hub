@@ -35,69 +35,69 @@ local currentlyLoading = {}
 ---@param caller? LocalScript | ModuleScript
 ---@return function | nil cleanup
 local function validateRequire(module, caller)
-	currentlyLoading[caller] = module
+    currentlyLoading[caller] = module
 
-	local currentModule = module
-	local depth = 0
+    local currentModule = module
+    local depth = 0
 
-	-- If the module is loaded, requiring it will not cause a circular dependency.
-	if not modules[module] then
-		while currentModule do
-			depth = depth + 1
-			currentModule = currentlyLoading[currentModule]
+    -- If the module is loaded, requiring it will not cause a circular dependency.
+    if not modules[module] then
+        while currentModule do
+            depth = depth + 1
+            currentModule = currentlyLoading[currentModule]
 
-			if currentModule == module then
-				local str = currentModule.Name -- Get the string traceback
+            if currentModule == module then
+                local str = currentModule.Name -- Get the string traceback
 
-				for _ = 1, depth do
-					currentModule = currentlyLoading[currentModule]
-					str = str .. "  ⇒ " .. currentModule.Name
-				end
+                for _ = 1, depth do
+                    currentModule = currentlyLoading[currentModule]
+                    str = str .. "  ⇒ " .. currentModule.Name
+                end
 
-				error("Failed to load '" .. module.Name .. "'; Detected a circular dependency chain: " .. str, 2)
-			end
-		end
-	end
+                error("Failed to load '" .. module.Name .. "'; Detected a circular dependency chain: " .. str, 2)
+            end
+        end
+    end
 
-	return function ()
-		if currentlyLoading[caller] == module then -- Thread-safe cleanup!
-			currentlyLoading[caller] = nil
-		end
-	end
+    return function ()
+        if currentlyLoading[caller] == module then -- Thread-safe cleanup!
+            currentlyLoading[caller] = nil
+        end
+    end
 end
 
 ---@param obj LocalScript | ModuleScript
 ---@param this? LocalScript | ModuleScript
 ---@return any
 local function loadModule(obj, this)
-	local cleanup = this and validateRequire(obj, this)
-	local module = modules[obj]
+    local cleanup = this and validateRequire(obj, this)
+    local module = modules[obj]
 
-	if module.isLoaded then
-		if cleanup then
-			cleanup()
-		end
-		return module.value
-	else
-		local data = module.fn()
-		module.value = data
-		module.isLoaded = true
-		if cleanup then
-			cleanup()
-		end
-		return data
-	end
+    if module.isLoaded then
+        if cleanup then
+            cleanup()
+        end
+        return module.value
+    else
+        local data = module.fn()
+        module.value = data
+        module.isLoaded = true
+        if cleanup then
+            cleanup()
+        end
+        return data
+    end
 end
 
 ---@param target ModuleScript
 ---@param this? LocalScript | ModuleScript
 ---@return any
 local function requireModuleInternal(target, this)
-	if modules[target] and target:IsA("ModuleScript") then
-		return loadModule(target, this)
-	else
-		return require(target)
-	end
+    if modules[target] and target:IsA("ModuleScript") then
+        return loadModule(target, this)
+    else
+        return require(target)
+    end
 end
 
 -- Instance creation
@@ -105,16 +105,16 @@ end
 ---@param id string
 ---@return table<string, any> environment
 local function newEnv(id)
-	return setmetatable({
-		VERSION = "1.1.1",
-		script = instanceFromId[id],
-		require = function (module)
-			return requireModuleInternal(module, instanceFromId[id])
-		end,
-	}, {
-		__index = getfenv(0),
-		__metatable = "This metatable is locked",
-	})
+    return setmetatable({
+        VERSION = "1.1.1",
+        script = instanceFromId[id],
+        require = function (module)
+            return requireModuleInternal(module, instanceFromId[id])
+        end,
+    }, {
+        __index = getfenv(0),
+        __metatable = "This metatable is locked",
+    })
 end
 
 ---@param name string
@@ -123,18 +123,18 @@ end
 ---@param parent string | nil
 ---@param fn function
 local function newModule(name, className, path, parent, fn)
-	local instance = Instance.new(className)
-	instance.Name = name
-	instance.Parent = instanceFromId[parent]
+    local instance = Instance.new(className)
+    instance.Name = name
+    instance.Parent = instanceFromId[parent]
 
-	instanceFromId[path] = instance
-	idFromInstance[instance] = path
+    instanceFromId[path] = instance
+    idFromInstance[instance] = path
 
-	modules[instance] = {
-		fn = fn,
-		isLoaded = false,
-		value = nil,
-	}
+    modules[instance] = {
+        fn = fn,
+        isLoaded = false,
+        value = nil,
+    }
 end
 
 ---@param name string
@@ -142,25 +142,25 @@ end
 ---@param path string
 ---@param parent string | nil
 local function newInstance(name, className, path, parent)
-	local instance = Instance.new(className)
-	instance.Name = name
-	instance.Parent = instanceFromId[parent]
+    local instance = Instance.new(className)
+    instance.Name = name
+    instance.Parent = instanceFromId[parent]
 
-	instanceFromId[path] = instance
-	idFromInstance[instance] = path
+    instanceFromId[path] = instance
+    idFromInstance[instance] = path
 end
 
 -- Runtime
 
 local function init()
-	if not game:IsLoaded() then
-		game.Loaded:Wait()
-	end
-	for object in pairs(modules) do
-		if object:IsA("LocalScript") and not object.Disabled then
-			task.spawn(loadModule, object)
-		end
-	end
+    if not game:IsLoaded() then
+        game.Loaded:Wait()
+    end
+    for object in pairs(modules) do
+        if object:IsA("LocalScript") and not object.Disabled then
+            task.spawn(loadModule, object)
+        end
+    end
 end
 
 
@@ -170,33 +170,33 @@ The component %q is missing the `render` method.
 The component %q has reached the setState update recursion limit.
 When using `setState` in `didUpdate`, make sure that it won't repeat infinitely!]]local qb={}function qb:__tostring()return self.__componentName end;local qc={}setmetatable(qc,qb)qc[pS]=pS.StatefulComponentClass;qc.__index=qc;qc.__componentName="Component"function qc:extend(hv)if pT.typeChecks then assert(pS.of(self)==pS.StatefulComponentClass,"Invalid `self` argument to `extend`.")assert(typeof(hv)=="string","Component class name must be a string")end;local oO={}for ej,d3 in pairs(self)do if ej~="extend"then oO[ej]=d3 end end;oO[pS]=pS.StatefulComponentClass;oO.__index=oO;oO.__componentName=hv;setmetatable(oO,qb)return oO end;function qc:__getDerivedState(qd,qe)if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentInstance,"Invalid use of `__getDerivedState`")end;local qf=self[q8]local qg=qf.componentClass;if qg.getDerivedStateFromProps~=nil then local qh=qg.getDerivedStateFromProps(qd,qe)if qh~=nil then if pT.typeChecks then assert(typeof(qh)=="table","getDerivedStateFromProps must return a table!")end;return qh end end;return nil end;function qc:setState(qi)if pT.typeChecks then assert(pS.of(self)==pS.StatefulComponentInstance,"Invalid `self` argument to `extend`.")end;local qf=self[q8]local qj=qf.lifecyclePhase;if qj==q4.ShouldUpdate or qj==q4.WillUpdate or qj==q4.Render or qj==q4.WillUnmount then local qk=q5[qf.lifecyclePhase]local oq=qk:format(tostring(qf.componentClass))error(oq,2)end;local ql=qf.pendingState;local qm;if typeof(qi)=="function"then qm=qi(ql or self.state,self.props)if qm==nil then return end elseif typeof(qi)=="table"then qm=qi else error("Invalid argument to setState, expected function or table",2)end;local ex;if ql~=nil then ex=q3(ql,qm)else ex=q3({},self.state,qm)end;if qj==q4.Init then local qh=self:__getDerivedState(self.props,ex)self.state=q3(ex,qh)elseif qj==q4.DidMount or qj==q4.DidUpdate or qj==q4.ReconcileChildren then local qh=self:__getDerivedState(self.props,ex)qf.pendingState=q3(ex,qh)elseif qj==q4.Idle then local qn=qf.virtualNode;local qo=qf.reconciler;if pT.tempFixUpdateChildrenReEntrancy then qo.suspendParentEvents(qn)end;self:__update(nil,ex)if pT.tempFixUpdateChildrenReEntrancy then qo.resumeParentEvents(qn)end else local qk=q5.default;local oq=qk:format(tostring(qf.componentClass))error(oq,2)end end;function qc:getElementTraceback()return self[q8].virtualNode.currentElement.source end;function qc:render()local qf=self[q8]local oq=q9:format(tostring(qf.componentClass))error(oq,0)end;function qc:__getContext(ej)if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentInstance,"Invalid use of `__getContext`")q6(ej~=nil,"Context key cannot be nil")end;local qn=self[q8].virtualNode;local qp=qn.context;return qp[ej]end;function qc:__addContext(ej,d3)if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentInstance,"Invalid use of `__addContext`")end;local qn=self[q8].virtualNode;if qn.originalContext==nil then qn.originalContext=qn.context end;local qq=qn.context;qn.context=q3({},qq,{[ej]=d3})end;function qc:__validateProps(l2)if not pT.propValidation then return end;local qr=self[q8].componentClass.validateProps;if qr==nil then return end;if typeof(qr)~="function"then error(("validateProps must be a function, but it is a %s.\nCheck the definition of the component %q."):format(typeof(qr),self.__componentName))end;local nr,qs=qr(l2)if not nr then qs=qs or"<Validator function did not supply a message>"error(("Property validation failed in %s: %s\n\n%s"):format(self.__componentName,tostring(qs),self:getElementTraceback()or"<enable element tracebacks>"),0)end end;function qc:__mount(qo,qn)if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentClass,"Invalid use of `__mount`")q6(pS.of(qn)==pS.VirtualNode,"Expected arg #2 to be of type VirtualNode")end;local qt=qn.currentElement;local qu=qn.hostParent;local qf={reconciler=qo,virtualNode=qn,componentClass=self,lifecyclePhase=q4.Init}local pv={[pS]=pS.StatefulComponentInstance,[q8]=qf}setmetatable(pv,self)qn.instance=pv;local l2=qt.props;if self.defaultProps~=nil then l2=q3({},self.defaultProps,l2)end;pv:__validateProps(l2)pv.props=l2;local qv=q3({},qn.legacyContext)pv._context=qv;pv.state=q3({},pv:__getDerivedState(pv.props,{}))if pv.init~=nil then pv:init(pv.props)q3(pv.state,pv:__getDerivedState(pv.props,pv.state))end;qn.legacyContext=pv._context;qf.lifecyclePhase=q4.Render;local qw=pv:render()qf.lifecyclePhase=q4.ReconcileChildren;qo.updateVirtualNodeWithRenderResult(qn,qu,qw)if pv.didMount~=nil then qf.lifecyclePhase=q4.DidMount;pv:didMount()end;if qf.pendingState~=nil then pv:__update(nil,nil)end;qf.lifecyclePhase=q4.Idle end;function qc:__unmount()if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentInstance,"Invalid use of `__unmount`")end;local qf=self[q8]local qn=qf.virtualNode;local qo=qf.reconciler;if self.willUnmount~=nil then qf.lifecyclePhase=q4.WillUnmount;self:willUnmount()end;for ev,qx in pairs(qn.children)do qo.unmountVirtualNode(qx)end end;function qc:__update(qy,qz)if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentInstance,"Invalid use of `__update`")q6(pS.of(qy)==pS.Element or qy==nil,"Expected arg #1 to be of type Element or nil")q6(typeof(qz)=="table"or qz==nil,"Expected arg #2 to be of type table or nil")end;local qf=self[q8]local qg=qf.componentClass;local qA=self.props;if qy~=nil then qA=qy.props;if qg.defaultProps~=nil then qA=q3({},qg.defaultProps,qA)end;self:__validateProps(qA)end;local qB=0;repeat local qC;local ql=nil;if qf.pendingState~=nil then ql=qf.pendingState;qf.pendingState=nil end;if qz~=nil or qA~=self.props then if ql==nil then qC=qz or self.state else qC=q3(ql,qz)end;local qh=self:__getDerivedState(qA,qC)if qh~=nil then qC=q3({},qC,qh)end;qz=nil else qC=ql end;if not self:__resolveUpdate(qA,qC)then return false end;qB=qB+1;if qB>q7 then error(qa:format(tostring(qf.componentClass)),3)end until qf.pendingState==nil;return true end;function qc:__resolveUpdate(qd,qe)if pT.internalTypeChecks then q6(pS.of(self)==pS.StatefulComponentInstance,"Invalid use of `__resolveUpdate`")end;local qf=self[q8]local qn=qf.virtualNode;local qo=qf.reconciler;local qD=self.props;local qE=self.state;if qd==nil then qd=qD end;if qe==nil then qe=qE end;if self.shouldUpdate~=nil then qf.lifecyclePhase=q4.ShouldUpdate;local qF=self:shouldUpdate(qd,qe)if not qF then qf.lifecyclePhase=q4.Idle;return false end end;if self.willUpdate~=nil then qf.lifecyclePhase=q4.WillUpdate;self:willUpdate(qd,qe)end;qf.lifecyclePhase=q4.Render;self.props=qd;self.state=qe;local qw=qn.instance:render()qf.lifecyclePhase=q4.ReconcileChildren;qo.updateVirtualNodeWithRenderResult(qn,qn.hostParent,qw)if self.didUpdate~=nil then qf.lifecyclePhase=q4.DidUpdate;self:didUpdate(qD,qE)end;qf.lifecyclePhase=q4.Idle;return true end;return qc end,newEnv("Orca.include.node_modules.roact.src.Component"))()end)newModule("ComponentLifecyclePhase","ModuleScript","Orca.include.node_modules.roact.src.ComponentLifecyclePhase","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR=require(script.Parent.Symbol)local pM=require(script.Parent.strict)local q4=pM({Init=pR.named("init"),Render=pR.named("render"),ShouldUpdate=pR.named("shouldUpdate"),WillUpdate=pR.named("willUpdate"),DidMount=pR.named("didMount"),DidUpdate=pR.named("didUpdate"),WillUnmount=pR.named("willUnmount"),ReconcileChildren=pR.named("reconcileChildren"),Idle=pR.named("idle")},"ComponentLifecyclePhase")return q4 end,newEnv("Orca.include.node_modules.roact.src.ComponentLifecyclePhase"))()end)newModule("Config","ModuleScript","Orca.include.node_modules.roact.src.Config","Orca.include.node_modules.roact.src",function()return setfenv(function()local qG={["internalTypeChecks"]=false,["typeChecks"]=false,["elementTracing"]=false,["propValidation"]=false,["tempFixUpdateChildrenReEntrancy"]=false}local qH={}for ej in pairs(qG)do table.insert(qH,ej)end;local mn={}function mn.new()local self={}self._currentConfig=setmetatable({},{__index=function(ev,ej)local oq=("Invalid global configuration key %q. Valid configuration keys are: %s"):format(tostring(ej),table.concat(qH,", "))error(oq,3)end})self.set=function(...)return mn.set(self,...)end;self.get=function(...)return mn.get(self,...)end;self.scoped=function(...)return mn.scoped(self,...)end;self.set(qG)return self end;function mn:set(qI)for ej,d3 in pairs(qI)do if qG[ej]==nil then local oq=("Invalid global configuration key %q (type %s). Valid configuration keys are: %s"):format(tostring(ej),typeof(ej),table.concat(qH,", "))error(oq,3)end;if typeof(d3)~="boolean"then local oq=("Invalid value %q (type %s) for global configuration key %q. Valid values are: true, false"):format(tostring(d3),typeof(d3),tostring(ej))error(oq,3)end;self._currentConfig[ej]=d3 end end;function mn:get()return self._currentConfig end;function mn:scoped(qI,da)local qJ={}for ej,d3 in pairs(self._currentConfig)do qJ[ej]=d3 end;self.set(qI)local nr,dx=pcall(da)self.set(qJ)assert(nr,dx)end;return mn end,newEnv("Orca.include.node_modules.roact.src.Config"))()end)newModule("ElementKind","ModuleScript","Orca.include.node_modules.roact.src.ElementKind","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR=require(script.Parent.Symbol)local pM=require(script.Parent.strict)local qK=require(script.Parent.Portal)local qL=newproxy(true)local qM={Portal=pR.named("Portal"),Host=pR.named("Host"),Function=pR.named("Function"),Stateful=pR.named("Stateful"),Fragment=pR.named("Fragment")}function qM.of(d3)if typeof(d3)~="table"then return nil end;return d3[qL]end;local qN={["string"]=qM.Host,["function"]=qM.Function,["table"]=qM.Stateful}function qM.fromComponent(qO)if qO==qK then return qL.Portal else return qN[typeof(qO)]end end;getmetatable(qL).__index=qM;pM(qM,"ElementKind")return qL end,newEnv("Orca.include.node_modules.roact.src.ElementKind"))()end)newModule("ElementUtils","ModuleScript","Orca.include.node_modules.roact.src.ElementUtils","Orca.include.node_modules.roact.src",function()return setfenv(function()local pS=require(script.Parent.Type)local pR=require(script.Parent.Symbol)local function p1()return nil end;local qP={}qP.UseParentKey=pR.named("UseParentKey")function qP.iterateElements(qQ)local qR=pS.of(qQ)if qR==pS.Element then local qS=false;return function()if qS then return nil else qS=true;return qP.UseParentKey,qQ end end end;local qT=typeof(qQ)if qQ==nil or qT=="boolean"then return p1 end;if qT=="table"then return pairs(qQ)end;error("Invalid elements")end;function qP.getElementByKey(qU,qV)if qU==nil or typeof(qU)=="boolean"then return nil end;if pS.of(qU)==pS.Element then if qV==qP.UseParentKey then return qU end;return nil end;if typeof(qU)=="table"then return qU[qV]end;error("Invalid elements")end;return qP end,newEnv("Orca.include.node_modules.roact.src.ElementUtils"))()end)newModule("GlobalConfig","ModuleScript","Orca.include.node_modules.roact.src.GlobalConfig","Orca.include.node_modules.roact.src",function()return setfenv(function()local mn=require(script.Parent.Config)return mn.new()end,newEnv("Orca.include.node_modules.roact.src.GlobalConfig"))()end)newModule("Logging","ModuleScript","Orca.include.node_modules.roact.src.Logging","Orca.include.node_modules.roact.src",function()return setfenv(function()local qW=true;local qX={}local qY={}local function qZ(q_,r0)local r1=("\t"):rep(r0)return r1 ..q_:gsub("\n","\n"..r1)end;local function r2(r3,r0)local r4={}for ev,r5 in ipairs(r3)do table.insert(r4,qZ(r5,r0))end;return table.concat(r4,"\n")end;local r6={}function r6:__tostring()local r4={"LogInfo {"}local r7=#self.errors;local r8=#self.warnings;local r9=#self.infos;if r7+r8+r9==0 then table.insert(r4,"\t(no messages)")end;if r7>0 then table.insert(r4,("\tErrors (%d) {"):format(r7))table.insert(r4,r2(self.errors,2))table.insert(r4,"\t}")end;if r8>0 then table.insert(r4,("\tWarnings (%d) {"):format(r8))table.insert(r4,r2(self.warnings,2))table.insert(r4,"\t}")end;if r9>0 then table.insert(r4,("\tInfos (%d) {"):format(r9))table.insert(r4,r2(self.infos,2))table.insert(r4,"\t}")end;table.insert(r4,"}")return table.concat(r4,"\n")end;local function ra()local rb={errors={},warnings={},infos={}}setmetatable(rb,r6)return rb end;local rc={}function rc.capture(da)local rd=ra()local re=qW;qW=false;qX[rd]=true;local nr,dx=pcall(da)qX[rd]=nil;qW=re;assert(nr,dx)return rd end;function rc.warn(qk,...)local oq=qk:format(...)for rd in pairs(qX)do table.insert(rd.warnings,oq)end;local rf=debug.traceback("",2):sub(2)local rg=("%s\n%s"):format(oq,qZ(rf,1))if qW then warn(rg)end end;function rc.warnOnce(qk,...)local rf=debug.traceback()if qY[rf]then return end;qY[rf]=true;rc.warn(qk,...)end;return rc end,newEnv("Orca.include.node_modules.roact.src.Logging"))()end)newModule("None","ModuleScript","Orca.include.node_modules.roact.src.None","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR=require(script.Parent.Symbol)local rh=pR.named("None")return rh end,newEnv("Orca.include.node_modules.roact.src.None"))()end)newModule("NoopRenderer","ModuleScript","Orca.include.node_modules.roact.src.NoopRenderer","Orca.include.node_modules.roact.src",function()return setfenv(function()local ri={}function ri.isHostObject(as)return as==nil end;function ri.mountHostNode(qo,o9)end;function ri.unmountHostNode(qo,o9)end;function ri.updateHostNode(qo,o9,rj)return o9 end;return ri end,newEnv("Orca.include.node_modules.roact.src.NoopRenderer"))()end)newModule("Portal","ModuleScript","Orca.include.node_modules.roact.src.Portal","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR=require(script.Parent.Symbol)local qK=pR.named("Portal")return qK end,newEnv("Orca.include.node_modules.roact.src.Portal"))()end)newInstance("PropMarkers","Folder","Orca.include.node_modules.roact.src.PropMarkers","Orca.include.node_modules.roact.src")newModule("Change","ModuleScript","Orca.include.node_modules.roact.src.PropMarkers.Change","Orca.include.node_modules.roact.src.PropMarkers",function()return setfenv(function()local pS=require(script.Parent.Parent.Type)local rk={}local rl={__tostring=function(self)return("RoactHostChangeEvent(%s)"):format(self.name)end}setmetatable(rk,{__index=function(self,rm)local rn={[pS]=pS.HostChangeEvent,name=rm}setmetatable(rn,rl)rk[rm]=rn;return rn end})return rk end,newEnv("Orca.include.node_modules.roact.src.PropMarkers.Change"))()end)newModule("Children","ModuleScript","Orca.include.node_modules.roact.src.PropMarkers.Children","Orca.include.node_modules.roact.src.PropMarkers",function()return setfenv(function()local pR=require(script.Parent.Parent.Symbol)local ro=pR.named("Children")return ro end,newEnv("Orca.include.node_modules.roact.src.PropMarkers.Children"))()end)newModule("Event","ModuleScript","Orca.include.node_modules.roact.src.PropMarkers.Event","Orca.include.node_modules.roact.src.PropMarkers",function()return setfenv(function()local pS=require(script.Parent.Parent.Type)local rp={}local rq={__tostring=function(self)return("RoactHostEvent(%s)"):format(self.name)end}setmetatable(rp,{__index=function(self,rr)local ow={[pS]=pS.HostEvent,name=rr}setmetatable(ow,rq)rp[rr]=ow;return ow end})return rp end,newEnv("Orca.include.node_modules.roact.src.PropMarkers.Event"))()end)newModule("Ref","ModuleScript","Orca.include.node_modules.roact.src.PropMarkers.Ref","Orca.include.node_modules.roact.src.PropMarkers",function()return setfenv(function()local pR=require(script.Parent.Parent.Symbol)local rs=pR.named("Ref")return rs end,newEnv("Orca.include.node_modules.roact.src.PropMarkers.Ref"))()end)newModule("PureComponent","ModuleScript","Orca.include.node_modules.roact.src.PureComponent","Orca.include.node_modules.roact.src",function()return setfenv(function()local qc=require(script.Parent.Component)local rt=qc:extend("PureComponent")rt.extend=qc.extend;function rt:shouldUpdate(qA,ex)if ex~=self.state then return true end;if qA==self.props then return false end;for ej,d3 in pairs(qA)do if self.props[ej]~=d3 then return true end end;for ej,d3 in pairs(self.props)do if qA[ej]~=d3 then return true end end;return false end;return rt end,newEnv("Orca.include.node_modules.roact.src.PureComponent"))()end)newModule("RobloxRenderer","ModuleScript","Orca.include.node_modules.roact.src.RobloxRenderer","Orca.include.node_modules.roact.src",function()return setfenv(function()local pN=require(script.Parent.Binding)local ro=require(script.Parent.PropMarkers.Children)local qL=require(script.Parent.ElementKind)local ru=require(script.Parent.SingleEventManager)local rv=require(script.Parent.getDefaultInstanceProperty)local rs=require(script.Parent.PropMarkers.Ref)local pS=require(script.Parent.Type)local q6=require(script.Parent.internalAssert)local pT=require(script.Parent.GlobalConfig).get()local rw=[[
 Error applying props:
-	%s
+    %s
 In element:
 %s
 ]]local rx=[[
 Error updating props:
-	%s
+    %s
 In element:
 %s
 ]]local function ry(...)return...end;local function rz(db,rA)if db==nil then return end;if typeof(db)=="function"then db(rA)elseif pS.of(db)==pS.Binding then pN.update(db,rA)else error(("Invalid ref: Expected type Binding but got %s"):format(typeof(db)))end end;local function rB(rC,ej,pY)if pY==nil then local rD=rC.ClassName;local ev,iM=rv(rD,ej)pY=iM end;rC[ej]=pY;return end;local function rE(qn,ej)local oy=qn.bindings[ej]oy()qn.bindings[ej]=nil end;local function rF(qn,ej,rG)local function rH(pY)local nr,rI=xpcall(function()rB(qn.hostObject,ej,pY)end,ry)if not nr then local q_=qn.currentElement.source;if q_==nil then q_="<enable element tracebacks>"end;local rg=rx:format(rI,q_)error(rg,0)end end;if qn.bindings==nil then qn.bindings={}end;qn.bindings[ej]=pN.subscribe(rG,rH)rH(rG:getValue())end;local function rJ(qn)if qn.bindings~=nil then for ev,oy in pairs(qn.bindings)do oy()end end end;local function rK(qn,ej,pY,rL)if pY==rL then return end;if ej==rs or ej==ro then return end;local rM=pS.of(ej)if rM==pS.HostEvent or rM==pS.HostChangeEvent then if qn.eventManager==nil then qn.eventManager=ru.new(qn.hostObject)end;local rr=ej.name;if rM==pS.HostChangeEvent then qn.eventManager:connectPropertyChange(rr,pY)else qn.eventManager:connectEvent(rr,pY)end;return end;local rN=pS.of(pY)==pS.Binding;local rO=pS.of(rL)==pS.Binding;if rO then rE(qn,ej)end;if rN then rF(qn,ej,pY)else rB(qn.hostObject,ej,pY)end end;local function rP(qn,l2)for rQ,d3 in pairs(l2)do rK(qn,rQ,d3,nil)end end;local function rR(qn,qD,qA)for rQ,pY in pairs(qA)do local rL=qD[rQ]rK(qn,rQ,pY,rL)end;for rQ,rL in pairs(qD)do local pY=qA[rQ]if pY==nil then rK(qn,rQ,nil,rL)end end end;local pL={}function pL.isHostObject(as)return typeof(as)=="Instance"end;function pL.mountHostNode(qo,qn)local rS=qn.currentElement;local qu=qn.hostParent;local qV=qn.hostKey;if pT.internalTypeChecks then q6(qL.of(rS)==qL.Host,"Element at given node is not a host Element")end;if pT.typeChecks then assert(rS.props.Name==nil,"Name can not be specified as a prop to a host component in Roact.")assert(rS.props.Parent==nil,"Parent can not be specified as a prop to a host component in Roact.")end;local pv=Instance.new(rS.component)qn.hostObject=pv;local nr,rI=xpcall(function()rP(qn,rS.props)end,ry)if not nr then local q_=rS.source;if q_==nil then q_="<enable element tracebacks>"end;local rg=rw:format(rI,q_)error(rg,0)end;pv.Name=tostring(qV)local be=rS.props[ro]if be~=nil then qo.updateVirtualNodeWithChildren(qn,qn.hostObject,be)end;pv.Parent=qu;qn.hostObject=pv;rz(rS.props[rs],pv)if qn.eventManager~=nil then qn.eventManager:resume()end end;function pL.unmountHostNode(qo,qn)local rS=qn.currentElement;rz(rS.props[rs],nil)for ev,qx in pairs(qn.children)do qo.unmountVirtualNode(qx)end;rJ(qn)qn.hostObject:Destroy()end;function pL.updateHostNode(qo,qn,rj)local qD=qn.currentElement.props;local qA=rj.props;if qn.eventManager~=nil then qn.eventManager:suspend()end;if qD[rs]~=qA[rs]then rz(qD[rs],nil)rz(qA[rs],qn.hostObject)end;local nr,rI=xpcall(function()rR(qn,qD,qA)end,ry)if not nr then local q_=rj.source;if q_==nil then q_="<enable element tracebacks>"end;local rg=rx:format(rI,q_)error(rg,0)end;local be=rj.props[ro]if be~=nil or qD[ro]~=nil then qo.updateVirtualNodeWithChildren(qn,qn.hostObject,be)end;if qn.eventManager~=nil then qn.eventManager:resume()end;return qn end;return pL end,newEnv("Orca.include.node_modules.roact.src.RobloxRenderer"))()end)newModule("SingleEventManager","ModuleScript","Orca.include.node_modules.roact.src.SingleEventManager","Orca.include.node_modules.roact.src",function()return setfenv(function()local rc=require(script.Parent.Logging)local rT="Change."local rU={Disabled="Disabled",Suspended="Suspended",Enabled="Enabled"}local ru={}ru.__index=ru;function ru.new(pv)local self=setmetatable({_suspendedEventQueue={},_connections={},_listeners={},_status=rU.Disabled,_isResuming=false,_instance=pv},ru)return self end;function ru:connectEvent(ej,rV)self:_connect(ej,self._instance[ej],rV)end;function ru:connectPropertyChange(ej,rV)local nr,ow=pcall(function()return self._instance:GetPropertyChangedSignal(ej)end)if not nr then error(("Cannot get changed signal on property %q: %s"):format(tostring(ej),ow),0)end;self:_connect(rT..ej,ow,rV)end;function ru:_connect(rW,ow,rV)if rV==nil then if self._connections[rW]~=nil then self._connections[rW]:Disconnect()self._connections[rW]=nil end;self._listeners[rW]=nil else if self._connections[rW]==nil then self._connections[rW]=ow:Connect(function(...)if self._status==rU.Enabled then self._listeners[rW](self._instance,...)elseif self._status==rU.Suspended then local rX=select("#",...)table.insert(self._suspendedEventQueue,{rW,rX,...})end end)end;self._listeners[rW]=rV end end;function ru:suspend()self._status=rU.Suspended end;function ru:resume()if self._isResuming then return end;self._isResuming=true;local c2=1;while c2<=#self._suspendedEventQueue do local rY=self._suspendedEventQueue[c2]local rV=self._listeners[rY[1]]local rX=rY[2]if rV~=nil then local rZ=coroutine.create(rV)local nr,dx=coroutine.resume(rZ,self._instance,unpack(rY,3,2+rX))if not nr then rc.warn("%s",dx)end end;c2=c2+1 end;self._isResuming=false;self._status=rU.Enabled;self._suspendedEventQueue={}end;return ru end,newEnv("Orca.include.node_modules.roact.src.SingleEventManager"))()end)newModule("Symbol","ModuleScript","Orca.include.node_modules.roact.src.Symbol","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR={}function pR.named(hv)assert(type(hv)=="string","Symbols must be created using a string name!")local self=newproxy(true)local r_=("Symbol(%s)"):format(hv)getmetatable(self).__tostring=function()return r_ end;return self end;return pR end,newEnv("Orca.include.node_modules.roact.src.Symbol"))()end)newModule("Type","ModuleScript","Orca.include.node_modules.roact.src.Type","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR=require(script.Parent.Symbol)local pM=require(script.Parent.strict)local pS=newproxy(true)local s0={}local function s1(hv)s0[hv]=pR.named("Roact"..hv)end;s1("Binding")s1("Element")s1("HostChangeEvent")s1("HostEvent")s1("StatefulComponentClass")s1("StatefulComponentInstance")s1("VirtualNode")s1("VirtualTree")function s0.of(d3)if typeof(d3)~="table"then return nil end;return d3[pS]end;getmetatable(pS).__index=s0;getmetatable(pS).__tostring=function()return"RoactType"end;pM(s0,"Type")return pS end,newEnv("Orca.include.node_modules.roact.src.Type"))()end)newModule("assertDeepEqual","ModuleScript","Orca.include.node_modules.roact.src.assertDeepEqual","Orca.include.node_modules.roact.src",function()return setfenv(function()local function s2(hD,dG)if typeof(hD)~=typeof(dG)then local oq=("{1} is of type %s, but {2} is of type %s"):format(typeof(hD),typeof(dG))return false,oq end;if typeof(hD)=="table"then local s3={}for ej,d3 in pairs(hD)do s3[ej]=true;local nr,s4=s2(d3,dG[ej])if not nr then local oq=s4:gsub("{1}",("{1}[%s]"):format(tostring(ej))):gsub("{2}",("{2}[%s]"):format(tostring(ej)))return false,oq end end;for ej,d3 in pairs(dG)do if not s3[ej]then local nr,s4=s2(d3,hD[ej])if not nr then local oq=s4:gsub("{1}",("{1}[%s]"):format(tostring(ej))):gsub("{2}",("{2}[%s]"):format(tostring(ej)))return false,oq end end end;return true end;if hD==dG then return true end;local oq="{1} ~= {2}"return false,oq end;local function s5(hD,dG)local nr,s6=s2(hD,dG)if not nr then local s4=s6:gsub("{1}","first"):gsub("{2}","second")local oq=("Values were not deep-equal.\n%s"):format(s4)error(oq,2)end end;return s5 end,newEnv("Orca.include.node_modules.roact.src.assertDeepEqual"))()end)newModule("assign","ModuleScript","Orca.include.node_modules.roact.src.assign","Orca.include.node_modules.roact.src",function()return setfenv(function()local rh=require(script.Parent.None)local function q3(as,...)for c2=1,select("#",...)do local q_=select(c2,...)if q_~=nil then for ej,d3 in pairs(q_)do if d3==rh then as[ej]=nil else as[ej]=d3 end end end end;return as end;return q3 end,newEnv("Orca.include.node_modules.roact.src.assign"))()end)newModule("createContext","ModuleScript","Orca.include.node_modules.roact.src.createContext","Orca.include.node_modules.roact.src",function()return setfenv(function()local pR=require(script.Parent.Symbol)local s7=require(script.Parent.createFragment)local pQ=require(script.Parent.createSignal)local ro=require(script.Parent.PropMarkers.Children)local qc=require(script.Parent.Component)local function s8(s9)return{value=s9,onUpdate=pQ()}end;local function sa(qp)local am=qc:extend("Provider")function am:init(l2)self.contextEntry=s8(l2.value)self:__addContext(qp.key,self.contextEntry)end;function am:willUpdate(sb)if sb.value~=self.props.value then self.contextEntry.value=sb.value end end;function am:didUpdate(sc)if sc.value~=self.props.value then self.contextEntry.onUpdate:fire(self.props.value)end end;function am:render()return s7(self.props[ro])end;return am end;local function sd(qp)local se=qc:extend("Consumer")function se.validateProps(l2)if type(l2.render)~="function"then return false,"Consumer expects a `render` function"else return true end end;function se:init(l2)self.contextEntry=self:__getContext(qp.key)end;function se:render()local d3;if self.contextEntry~=nil then d3=self.contextEntry.value else d3=qp.defaultValue end;return self.props.render(d3)end;function se:didUpdate()if self.contextEntry~=nil then self.lastValue=self.contextEntry.value end end;function se:didMount()if self.contextEntry~=nil then self.disconnect=self.contextEntry.onUpdate:subscribe(function(pY)if pY~=self.lastValue then self:setState({})end end)end end;function se:willUnmount()if self.disconnect~=nil then self.disconnect()end end;return se end;local sf={}sf.__index=sf;function sf.new(iM)return setmetatable({defaultValue=iM,key=pR.named("ContextKey")},sf)end;function sf:__tostring()return"RoactContext"end;local function sg(iM)local qp=sf.new(iM)return{Provider=sa(qp),Consumer=sd(qp)}end;return sg end,newEnv("Orca.include.node_modules.roact.src.createContext"))()end)newModule("createElement","ModuleScript","Orca.include.node_modules.roact.src.createElement","Orca.include.node_modules.roact.src",function()return setfenv(function()local ro=require(script.Parent.PropMarkers.Children)local qL=require(script.Parent.ElementKind)local rc=require(script.Parent.Logging)local pS=require(script.Parent.Type)local pT=require(script.Parent.GlobalConfig).get()local sh=[[
 The prop `Roact.Children` was defined but was overriden by the third parameter to createElement!
 This can happen when a component passes props through to a child element but also uses the `children` argument:
 
-	Roact.createElement("Frame", passedProps, {
-		child = ...
-	})
+    Roact.createElement("Frame", passedProps, {
+        child = ...
+    })
 
 Instead, consider using a utility function to merge tables of children together:
 
-	local children = mergeTables(passedProps[Roact.Children], {
-		child = ...
-	})
+    local children = mergeTables(passedProps[Roact.Children], {
+        child = ...
+    })
 
-	local fullProps = mergeTables(passedProps, {
-		[Roact.Children] = children
-	})
+    local fullProps = mergeTables(passedProps, {
+        [Roact.Children] = children
+    })
 
-	Roact.createElement("Frame", fullProps)]]local function si(qO,l2,be)if pT.typeChecks then assert(qO~=nil,"`component` is required")assert(typeof(l2)=="table"or l2==nil,"`props` must be a table or nil")assert(typeof(be)=="table"or be==nil,"`children` must be a table or nil")end;if l2==nil then l2={}end;if be~=nil then if l2[ro]~=nil then rc.warnOnce(sh)end;l2[ro]=be end;local sj=qL.fromComponent(qO)local rS={[pS]=pS.Element,[qL]=sj,component=qO,props=l2}if pT.elementTracing then rS.source=debug.traceback("",2):sub(2)end;return rS end;return si end,newEnv("Orca.include.node_modules.roact.src.createElement"))()end)newModule("createFragment","ModuleScript","Orca.include.node_modules.roact.src.createFragment","Orca.include.node_modules.roact.src",function()return setfenv(function()local qL=require(script.Parent.ElementKind)local pS=require(script.Parent.Type)local function s7(qU)return{[pS]=pS.Element,[qL]=qL.Fragment,elements=qU}end;return s7 end,newEnv("Orca.include.node_modules.roact.src.createFragment"))()end)newModule("createReconciler","ModuleScript","Orca.include.node_modules.roact.src.createReconciler","Orca.include.node_modules.roact.src",function()return setfenv(function()local pS=require(script.Parent.Type)local qL=require(script.Parent.ElementKind)local qP=require(script.Parent.ElementUtils)local ro=require(script.Parent.PropMarkers.Children)local pR=require(script.Parent.Symbol)local q6=require(script.Parent.internalAssert)local pT=require(script.Parent.GlobalConfig).get()local q8=pR.named("InternalData")local function pJ(sk)local qo;local sl;local sm;local sn;local function so(qn,rj)local qu=qn.hostParent;local qV=qn.hostKey;local oM=qn.depth;local ni=qn.parent;local qp=qn.originalContext or qn.context;local sp=qn.parentLegacyContext;sn(qn)local sq=sl(rj,qu,qV,qp,sp)if sq~=nil then sq.depth=oM;sq.parent=ni end;return sq end;local function sr(qn,qu,ss)if pT.internalTypeChecks then q6(pS.of(qn)==pS.VirtualNode,"Expected arg #1 to be of type VirtualNode")end;local st={}for su,qx in pairs(qn.children)do local rj=qP.getElementByKey(ss,su)local sq=sm(qx,rj)if sq~=nil then qn.children[su]=sq else st[su]=true end end;for su in pairs(st)do qn.children[su]=nil end;for su,rj in qP.iterateElements(ss)do local sv=su;if su==qP.UseParentKey then sv=qn.hostKey end;if qn.children[su]==nil then local qx=sl(rj,qu,sv,qn.context,qn.legacyContext)if qx~=nil then qx.depth=qn.depth+1;qx.parent=qn;qn.children[su]=qx end end end end;local function sw(qn,qu,ss)sr(qn,qu,ss)end;local function sx(qn,qu,qw)if pS.of(qw)==pS.Element or qw==nil or typeof(qw)=="boolean"then sr(qn,qu,qw)else error(("%s\n%s"):format("Component returned invalid children:",qn.currentElement.source or"<enable element tracebacks>"),0)end end;function sn(qn)if pT.internalTypeChecks then q6(pS.of(qn)==pS.VirtualNode,"Expected arg #1 to be of type VirtualNode")end;local nl=qL.of(qn.currentElement)if nl==qL.Host then sk.unmountHostNode(qo,qn)elseif nl==qL.Function then for ev,qx in pairs(qn.children)do sn(qx)end elseif nl==qL.Stateful then qn.instance:__unmount()elseif nl==qL.Portal then for ev,qx in pairs(qn.children)do sn(qx)end elseif nl==qL.Fragment then for ev,qx in pairs(qn.children)do sn(qx)end else error(("Unknown ElementKind %q"):format(tostring(nl)),2)end end;local function sy(qn,rj)local be=rj.component(rj.props)sx(qn,qn.hostParent,be)return qn end;local function sz(qn,rj)local sA=qn.currentElement;local sB=sA.props.target;local sC=rj.props.target;assert(sk.isHostObject(sC),"Expected target to be host object")if sC~=sB then return so(qn,rj)end;local be=rj.props[ro]sw(qn,sC,be)return qn end;local function sD(qn,rj)sw(qn,qn.hostParent,rj.elements)return qn end;function sm(qn,rj,ex)if pT.internalTypeChecks then q6(pS.of(qn)==pS.VirtualNode,"Expected arg #1 to be of type VirtualNode")end;if pT.typeChecks then assert(pS.of(rj)==pS.Element or typeof(rj)=="boolean"or rj==nil,"Expected arg #2 to be of type Element, boolean, or nil")end;if qn.currentElement==rj and ex==nil then return qn end;if typeof(rj)=="boolean"or rj==nil then sn(qn)return nil end;if qn.currentElement.component~=rj.component then return so(qn,rj)end;local nl=qL.of(rj)local sE=true;if nl==qL.Host then qn=sk.updateHostNode(qo,qn,rj)elseif nl==qL.Function then qn=sy(qn,rj)elseif nl==qL.Stateful then sE=qn.instance:__update(rj,ex)elseif nl==qL.Portal then qn=sz(qn,rj)elseif nl==qL.Fragment then qn=sD(qn,rj)else error(("Unknown ElementKind %q"):format(tostring(nl)),2)end;if not sE then return qn end;qn.currentElement=rj;return qn end;local function sF(rS,qu,qV,qp,sG)if pT.internalTypeChecks then q6(sk.isHostObject(qu)or qu==nil,"Expected arg #2 to be a host object")q6(typeof(qp)=="table"or qp==nil,"Expected arg #4 to be of type table or nil")q6(typeof(sG)=="table"or sG==nil,"Expected arg #5 to be of type table or nil")end;if pT.typeChecks then assert(qV~=nil,"Expected arg #3 to be non-nil")assert(pS.of(rS)==pS.Element or typeof(rS)=="boolean","Expected arg #1 to be of type Element or boolean")end;return{[pS]=pS.VirtualNode,currentElement=rS,depth=1,parent=nil,children={},hostParent=qu,hostKey=qV,legacyContext=sG,parentLegacyContext=sG,context=qp or{},originalContext=nil}end;local function sH(qn)local rS=qn.currentElement;local be=rS.component(rS.props)sx(qn,qn.hostParent,be)end;local function sI(qn)local rS=qn.currentElement;local sC=rS.props.target;local be=rS.props[ro]assert(sk.isHostObject(sC),"Expected target to be host object")sw(qn,sC,be)end;local function sJ(qn)local rS=qn.currentElement;local be=rS.elements;sw(qn,qn.hostParent,be)end;function sl(rS,qu,qV,qp,sG)if pT.internalTypeChecks then q6(sk.isHostObject(qu)or qu==nil,"Expected arg #2 to be a host object")q6(typeof(sG)=="table"or sG==nil,"Expected arg #5 to be of type table or nil")end;if pT.typeChecks then assert(qV~=nil,"Expected arg #3 to be non-nil")assert(pS.of(rS)==pS.Element or typeof(rS)=="boolean","Expected arg #1 to be of type Element or boolean")end;if typeof(rS)=="boolean"then return nil end;local nl=qL.of(rS)local qn=sF(rS,qu,qV,qp,sG)if nl==qL.Host then sk.mountHostNode(qo,qn)elseif nl==qL.Function then sH(qn)elseif nl==qL.Stateful then rS.component:__mount(qo,qn)elseif nl==qL.Portal then sI(qn)elseif nl==qL.Fragment then sJ(qn)else error(("Unknown ElementKind %q"):format(tostring(nl)),2)end;return qn end;local function sK(rS,qu,qV)if pT.typeChecks then assert(pS.of(rS)==pS.Element,"Expected arg #1 to be of type Element")assert(sk.isHostObject(qu)or qu==nil,"Expected arg #2 to be a host object")end;if qV==nil then qV="RoactTree"end;local sL={[pS]=pS.VirtualTree,[q8]={rootNode=nil,mounted=true}}sL[q8].rootNode=sl(rS,qu,qV)return sL end;local function sM(sL)local qf=sL[q8]if pT.typeChecks then assert(pS.of(sL)==pS.VirtualTree,"Expected arg #1 to be a Roact handle")assert(qf.mounted,"Cannot unmounted a Roact tree that has already been unmounted")end;qf.mounted=false;if qf.rootNode~=nil then sn(qf.rootNode)end end;local function sN(sL,rj)local qf=sL[q8]if pT.typeChecks then assert(pS.of(sL)==pS.VirtualTree,"Expected arg #1 to be a Roact handle")assert(pS.of(rj)==pS.Element,"Expected arg #2 to be a Roact Element")end;qf.rootNode=sm(qf.rootNode,rj)return sL end;local function sO(qn)local sP=qn.parent;while sP do if sP.eventManager~=nil then sP.eventManager:suspend()end;sP=sP.parent end end;local function sQ(qn)local sP=qn.parent;while sP do if sP.eventManager~=nil then sP.eventManager:resume()end;sP=sP.parent end end;qo={mountVirtualTree=sK,unmountVirtualTree=sM,updateVirtualTree=sN,createVirtualNode=sF,mountVirtualNode=sl,unmountVirtualNode=sn,updateVirtualNode=sm,updateVirtualNodeWithChildren=sw,updateVirtualNodeWithRenderResult=sx,suspendParentEvents=sO,resumeParentEvents=sQ}return qo end;return pJ end,newEnv("Orca.include.node_modules.roact.src.createReconciler"))()end)newModule("createReconcilerCompat","ModuleScript","Orca.include.node_modules.roact.src.createReconcilerCompat","Orca.include.node_modules.roact.src",function()return setfenv(function()local rc=require(script.Parent.Logging)local sR=[[
+    Roact.createElement("Frame", fullProps)]]local function si(qO,l2,be)if pT.typeChecks then assert(qO~=nil,"`component` is required")assert(typeof(l2)=="table"or l2==nil,"`props` must be a table or nil")assert(typeof(be)=="table"or be==nil,"`children` must be a table or nil")end;if l2==nil then l2={}end;if be~=nil then if l2[ro]~=nil then rc.warnOnce(sh)end;l2[ro]=be end;local sj=qL.fromComponent(qO)local rS={[pS]=pS.Element,[qL]=sj,component=qO,props=l2}if pT.elementTracing then rS.source=debug.traceback("",2):sub(2)end;return rS end;return si end,newEnv("Orca.include.node_modules.roact.src.createElement"))()end)newModule("createFragment","ModuleScript","Orca.include.node_modules.roact.src.createFragment","Orca.include.node_modules.roact.src",function()return setfenv(function()local qL=require(script.Parent.ElementKind)local pS=require(script.Parent.Type)local function s7(qU)return{[pS]=pS.Element,[qL]=qL.Fragment,elements=qU}end;return s7 end,newEnv("Orca.include.node_modules.roact.src.createFragment"))()end)newModule("createReconciler","ModuleScript","Orca.include.node_modules.roact.src.createReconciler","Orca.include.node_modules.roact.src",function()return setfenv(function()local pS=require(script.Parent.Type)local qL=require(script.Parent.ElementKind)local qP=require(script.Parent.ElementUtils)local ro=require(script.Parent.PropMarkers.Children)local pR=require(script.Parent.Symbol)local q6=require(script.Parent.internalAssert)local pT=require(script.Parent.GlobalConfig).get()local q8=pR.named("InternalData")local function pJ(sk)local qo;local sl;local sm;local sn;local function so(qn,rj)local qu=qn.hostParent;local qV=qn.hostKey;local oM=qn.depth;local ni=qn.parent;local qp=qn.originalContext or qn.context;local sp=qn.parentLegacyContext;sn(qn)local sq=sl(rj,qu,qV,qp,sp)if sq~=nil then sq.depth=oM;sq.parent=ni end;return sq end;local function sr(qn,qu,ss)if pT.internalTypeChecks then q6(pS.of(qn)==pS.VirtualNode,"Expected arg #1 to be of type VirtualNode")end;local st={}for su,qx in pairs(qn.children)do local rj=qP.getElementByKey(ss,su)local sq=sm(qx,rj)if sq~=nil then qn.children[su]=sq else st[su]=true end end;for su in pairs(st)do qn.children[su]=nil end;for su,rj in qP.iterateElements(ss)do local sv=su;if su==qP.UseParentKey then sv=qn.hostKey end;if qn.children[su]==nil then local qx=sl(rj,qu,sv,qn.context,qn.legacyContext)if qx~=nil then qx.depth=qn.depth+1;qx.parent=qn;qn.children[su]=qx end end end end;local function sw(qn,qu,ss)sr(qn,qu,ss)end;local function sx(qn,qu,qw)if pS.of(qw)==pS.Element or qw==nil or typeof(qw)=="boolean"then sr(qn,qu,qw)else error(("%s\n%s"):format("Component returned invalid children:",qn.currentElement.source or"<enable element tracebacks>"),0)end end;function sn(qn)if pT.internalTypeChecks then q6(pS.of(qn)==pS.VirtualNode,"Expected arg #1 to be of type VirtualNode")end;local nl=qL.of(qn.currentElement)if nl==qL.Host then sk.unmountHostNode(qo,qn)elseif nl==qL.Function then for ev,qx in pairs(qn.children)do sn(qx)end elseif nl==qL.Stateful then qn.instance:__unmount()elseif nl==qL.Portal then for ev,qx in pairs(qn.children)do sn(qx)end elseif nl==qL.Fragment then for ev,qx in pairs(qn.children)do sn(qx)end else error(("Unknown ElementKind %q"):format(tostring(nl)),2)end end;local function sy(qn,rj)local be=rj.component(rj.props)sx(qn,qn.hostParent,be)return qn end;local function sz(qn,rj)local sA=qn.currentElement;local sB=sA.props.target;local sC=rj.props.target;assert(sk.isHostObject(sC),"Expected target to be host object")if sC~=sB then return so(qn,rj)end;local be=rj.props[ro]sw(qn,sC,be)return qn end;local function sD(qn,rj)sw(qn,qn.hostParent,rj.elements)return qn end;function sm(qn,rj,ex)if pT.internalTypeChecks then q6(pS.of(qn)==pS.VirtualNode,"Expected arg #1 to be of type VirtualNode")end;if pT.typeChecks then assert(pS.of(rj)==pS.Element or typeof(rj)=="boolean"or rj==nil,"Expected arg #2 to be of type Element, boolean, or nil")end;if qn.currentElement==rj and ex==nil then return qn end;if typeof(rj)=="boolean"or rj==nil then sn(qn)return nil end;if qn.currentElement.component~=rj.component then return so(qn,rj)end;local nl=qL.of(rj)local sE=true;if nl==qL.Host then qn=sk.updateHostNode(qo,qn,rj)elseif nl==qL.Function then qn=sy(qn,rj)elseif nl==qL.Stateful then sE=qn.instance:__update(rj,ex)elseif nl==qL.Portal then qn=sz(qn,rj)elseif nl==qL.Fragment then qn=sD(qn,rj)else error(("Unknown ElementKind %q"):format(tostring(nl)),2)end;if not sE then return qn end;qn.currentElement=rj;return qn end;local function sF(rS,qu,qV,qp,sG)if pT.internalTypeChecks then q6(sk.isHostObject(qu)or qu==nil,"Expected arg #2 to be a host object")q6(typeof(qp)=="table"or qp==nil,"Expected arg #4 to be of type table or nil")q6(typeof(sG)=="table"or sG==nil,"Expected arg #5 to be of type table or nil")end;if pT.typeChecks then assert(qV~=nil,"Expected arg #3 to be non-nil")assert(pS.of(rS)==pS.Element or typeof(rS)=="boolean","Expected arg #1 to be of type Element or boolean")end;return{[pS]=pS.VirtualNode,currentElement=rS,depth=1,parent=nil,children={},hostParent=qu,hostKey=qV,legacyContext=sG,parentLegacyContext=sG,context=qp or{},originalContext=nil}end;local function sH(qn)local rS=qn.currentElement;local be=rS.component(rS.props)sx(qn,qn.hostParent,be)end;local function sI(qn)local rS=qn.currentElement;local sC=rS.props.target;local be=rS.props[ro]assert(sk.isHostObject(sC),"Expected target to be host object")sw(qn,sC,be)end;local function sJ(qn)local rS=qn.currentElement;local be=rS.elements;sw(qn,qn.hostParent,be)end;function sl(rS,qu,qV,qp,sG)if pT.internalTypeChecks then q6(sk.isHostObject(qu)or qu==nil,"Expected arg #2 to be a host object")q6(typeof(sG)=="table"or sG==nil,"Expected arg #5 to be of type table or nil")end;if pT.typeChecks then assert(qV~=nil,"Expected arg #3 to be non-nil")assert(pS.of(rS)==pS.Element or typeof(rS)=="boolean","Expected arg #1 to be of type Element or boolean")end;if typeof(rS)=="boolean"then return nil end;local nl=qL.of(rS)local qn=sF(rS,qu,qV,qp,sG)if nl==qL.Host then sk.mountHostNode(qo,qn)elseif nl==qL.Function then sH(qn)elseif nl==qL.Stateful then rS.component:__mount(qo,qn)elseif nl==qL.Portal then sI(qn)elseif nl==qL.Fragment then sJ(qn)else error(("Unknown ElementKind %q"):format(tostring(nl)),2)end;return qn end;local function sK(rS,qu,qV)if pT.typeChecks then assert(pS.of(rS)==pS.Element,"Expected arg #1 to be of type Element")assert(sk.isHostObject(qu)or qu==nil,"Expected arg #2 to be a host object")end;if qV==nil then qV="RoactTree"end;local sL={[pS]=pS.VirtualTree,[q8]={rootNode=nil,mounted=true}}sL[q8].rootNode=sl(rS,qu,qV)return sL end;local function sM(sL)local qf=sL[q8]if pT.typeChecks then assert(pS.of(sL)==pS.VirtualTree,"Expected arg #1 to be a Roact handle")assert(qf.mounted,"Cannot unmounted a Roact tree that has already been unmounted")end;qf.mounted=false;if qf.rootNode~=nil then sn(qf.rootNode)end end;local function sN(sL,rj)local qf=sL[q8]if pT.typeChecks then assert(pS.of(sL)==pS.VirtualTree,"Expected arg #1 to be a Roact handle")assert(pS.of(rj)==pS.Element,"Expected arg #2 to be a Roact Element")end;qf.rootNode=sm(qf.rootNode,rj)return sL end;local function sO(qn)local sP=qn.parent;while sP do if sP.eventManager~=nil then sP.eventManager:suspend()end;sP=sP.parent end end;local function sQ(qn)local sP=qn.parent;while sP do if sP.eventManager~=nil then sP.eventManager:resume()end;sP=sP.parent end end;qo={mountVirtualTree=sK,unmountVirtualTree=sM,updateVirtualTree=sN,createVirtualNode=sF,mountVirtualNode=sl,unmountVirtualNode=sn,updateVirtualNode=sm,updateVirtualNodeWithChildren=sw,updateVirtualNodeWithRenderResult=sx,suspendParentEvents=sO,resumeParentEvents=sQ}return qo end;return pJ end,newEnv("Orca.include.node_modules.roact.src.createReconciler"))()end)newModule("createReconcilerCompat","ModuleScript","Orca.include.node_modules.roact.src.createReconcilerCompat","Orca.include.node_modules.roact.src",function()return setfenv(function()local rc=require(script.Parent.Logging)local sR=[[
 Roact.reify has been renamed to Roact.mount and will be removed in a future release.
 Check the call to Roact.reify at:
 ]]local sS=[[
